@@ -1,0 +1,21 @@
+# Eclipse
+.project
+.settings/
+.classpath
+
+
+# Ausgabeverzeichnis von Maven-Projekten
+target/
+
+
+# IntelliJ
+.idea/
+*.iml
+
+
+~$*
+*~
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk

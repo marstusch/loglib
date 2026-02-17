@@ -1,0 +1,63 @@
+#
+# Automatische Behandlung von Zeilenenden durch Git für alle Dateien, die unterhalb nicht angegeben sind:
+#
+*               text=auto
+
+
+#
+# Für die folgenden Textdateien werden die Zeilenenden im Repository nach LF normalisiert.
+# Beim Schreiben in das Arbeitsverzeichnis wird die Einstellung core.eol verwendet (Standard: native):
+#
+# Allgemein:
+*.xsd           text
+*.xml           text
+*.xsl           text
+*.xslt          text
+*.txt           text
+*.csv           text
+*.sql           text
+*.df            text
+*.htm           text
+*.html          text
+*.tld           text
+*.tag           text
+*.tagx          text
+*.yml           text
+*.ini           text
+
+
+#
+# Für die folgenden Textdateien werden die Zeilenenden im Repository nach LF normalisiert.
+# Beim Schreiben in das Arbeitsverzeichnis werden die Zeilenenden wird die Einstellung core.eol ignoriert:
+#
+# Skripte:
+*.sh            text eol=lf
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+*.ps1           text eol=crlf
+
+#
+# Die folgenden Dateien sind Binärdateien und werden im Repository so gespeichert, wie sie im Arbeitsverzeichnis abgelegt sind:
+#
+# Bilbiotheken:
+*.class         binary
+*.dll           binary
+*.ear           binary
+*.jar           binary
+*.so            binary
+*.war           binary
+
+# Grafiken:
+*.bmp           binary
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.tif           binary
+*.tiff          binary
+*.ico           binary
+*.svg           binary
+*.eps           binary
+
+# Fonts:
+*.ttf           binary
