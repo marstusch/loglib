@@ -34,7 +34,7 @@ class LoggingContextConfigTest {
 
       LoggingContextConfig contextConfig = new LoggingContextConfig(config);
 
-      assertThat(contextConfig.getServiceName()).isEqualTo("unbekannter Service-Name");
-      assertThat(contextConfig.getEnvironment()).isEqualTo("unbekannte Umgebung");
+      assertThat(contextConfig.getServiceName()).isEqualTo("unknown-service");
+      assertThat(contextConfig.getEnvironment()).isEqualTo("prod");
    }
 }

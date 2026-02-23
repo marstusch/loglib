@@ -1,0 +1,10 @@
+name: MTGZ Logging
+metadata:
+  short-name: mtgz-logging
+  keywords:
+    - logging
+    - otel
+    - correlation-id
+  categories:
+    - observability
+  status: preview

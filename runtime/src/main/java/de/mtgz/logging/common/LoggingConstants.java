@@ -16,7 +16,7 @@ public class LoggingConstants {
    /**
     * MDC-Key für die Service-Bezeichnung.
     */
-   public static final String SERVICE_NAME_KEY = "service.name";
+   public static final String SERVICE_NAME_KEY = "service";
    /**
     * MDC-Key für die Umgebung.
     */

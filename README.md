@@ -1,80 +1,66 @@
-# Logging-Library
+# quarkus-mtgz-logging
 
-Logging ist eine in Java 21 geschriebene Library für Quarkus-Microservices. Sie stellt wiederverwendbare Logging-Funktionen bereit, damit Entwickler diese nicht in jedem Service selbst implementieren müssen. Schwerpunkte sind CorrelationId-Propagation, standardisierte MDC-Felder sowie ein konsistentes Exception-Handling inklusive ErrorId.
+`quarkus-mtgz-logging` ist jetzt eine **echte Quarkus Extension** mit Runtime- und Deployment-Modul.
 
-## Setup & Entwicklung
+## Was war schon vorhanden (Analyse)
 
-### Voraussetzungen
+Bereits implementiert und übernommen:
+- JAX-RS Request/Response Filter für `correlationId`, `http.method`, `http.path`.
+- Rest-Client Request Filter zur CorrelationId-Propagation.
+- MDC-Befüllung inkl. Trace/Span-Auslesen über OpenTelemetry API.
+- ExceptionMapper (`GenericExceptionMapper`, `NotFoundExceptionMapper`, `ValidationExceptionMapper`).
+- Logging Wrapper/Masking/Hashing Utilitys.
 
-- Java 21 (JDK)
-- Maven 3.9+
+Neu als Extension ergänzt:
+- automatische Default-Konfiguration (JSON Logging, OTel, additional fields service/environment),
+- automatische Provider/Filter-Aktivierung ohne `quarkus.index-dependency.*` im Consumer,
+- transitive Quarkus-Dependencies über ein einziges Consumer-Artifact.
 
-### Build & Tests
-
-```bash
-mvn clean install
-```
-
-### Entwicklungshinweise
-
-- Alle Logging-Provider sind als JAX-RS-Provider registriert und wirken automatisch in Quarkus-Services.
-- Die Library setzt MDC-Felder für CorrelationId, HTTP-Metadaten sowie (falls aktiv) Trace/Span-IDs.
-- Fehler werden über globale ExceptionMapper konsistent behandelt und liefern eine ErrorId im Response-Header `X-Error-Id`.
-
-## Verwendung als Maven-Dependency
-
-Füge die Dependency im Zielprojekt (z. B. Quarkus-Microservice) ein:
+## Consumer Usage (nur 1 Dependency)
 
 ```xml
 <dependency>
-   <groupId>de.mtgz.logging</groupId>
-   <artifactId>logging</artifactId>
-   <version>0.1-SNAPSHOT</version>
+  <groupId>de.mtgz.logging</groupId>
+  <artifactId>quarkus-mtgz-logging</artifactId>
+  <version>0.1-SNAPSHOT</version>
 </dependency>
 ```
 
-## Konfiguration des Loggings in anderen Quarkus-Projekten
-Damit in deinem Quarkus-Projekt auch richtig geloggt wird, muss die `application.properties` angepasst werden. Füge dafür folgende Zeilen hinzu:
+Keine weiteren Logging/OTel/Validation/Micrometer Dependencies nötig.
+
+## Default-Verhalten der Extension
+
+Die Extension setzt nur Defaults (überschreibbar durch Consumer):
+
 ```properties
 quarkus.log.console.json=true
-quarkus.log.console.json.pretty-print=true
-quarkus.log.console.level=INFO
-quarkus.log.console.json.additional-field.service.value=bitte_Service-Namen_einsetzen
-quarkus.log.console.json.additional-field.environment.value=${quarkus.profile}
-
+quarkus.log.console.json.additional-field.service.value=${quarkus.application.name:unknown-service}
+quarkus.log.console.json.additional-field.environment.value=${quarkus.profile:prod}
 quarkus.otel.enabled=true
 quarkus.otel.traces.enabled=true
-quarkus.otel.metrics.enabled=true
-quarkus.micrometer.export.prometheus.enabled=true
 ```
 
-Damit diese Konfiguration ausgeführt wird, musst du lokal deine Applikation mit folgendem Befehl starten (in der OCP geschieht das automatisch):
+### JSON-Logfelder
+
+Folgende Felder sind damit standardmäßig verfügbar:
+- `service`, `environment` (via JSON additional fields),
+- `correlationId`, `http.method`, `http.path` (via Request-Filter + MDC),
+- `traceId`, `spanId` (OTel + MDC-Befüllung).
+
+## Optionale Overrides im Consumer
+
+```properties
+quarkus.log.console.json.additional-field.service.value=my-service
+quarkus.log.console.json.additional-field.environment.value=staging
+```
+
+## Projektstruktur
+
+- `runtime/`: Laufzeitcode der Extension (Filter, Mapper, MDC, Utilities, Extension-Metadaten)
+- `deployment/`: BuildSteps/Processor für Default-Config und automatische Registrierung
+
+## Build
+
 ```bash
- ./mvnw quarkus:dev -Dquarkus.profile=prod
+mvn clean verify
 ```
-
-### Human-Readable Logs
-Für die Entwicklung empfiehlt es sich auf Human-Readable Logs zurückzugreifen. Dafür muss die Datei `application-dev.properties` im `resources` Verzeichnis des Projekt angelegt werden:
-````properties
-quarkus.log.console.json=false
-quarkus.log.console.format=%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p %m service=%X{service} env=%X{environment} host=%h traceId=%X{traceId} spanId=%X{spanId} corrId=%X{correlationId} http.method=%X{http.method} http.path=%X{http.path}%n
-quarkus.log.console.level=DEBUG
-````
-Diese Konfiguration wird ausgeführt, wenn die Applikation normal im Dev-Modus gestartet wird:
-```bash
- ./mvnw quarkus:dev
-```
-## Verwendung des Loggers
-Die `LoggerFactory` liefert euch eine Implentierung des `Logger`-Interfaces zurück. Die Verwendung in deiner Klasse erfolgt so:
-````java
-private Logger logger = LoggerFactory.getLogger(DeineKlasse.class);
-````
-
-Log-Statements werden bspw. so erzeugt:
-````java
-// ohne Formatter
-logger.info("Abfrage für UserId " + userId + " war erfolgreich...");
-
-// mit Formatter
-logger.infof("Abfrage für UserId %s war erfolgreich...", userId);
-````

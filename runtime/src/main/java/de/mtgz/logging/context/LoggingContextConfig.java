@@ -29,7 +29,7 @@ public class LoggingContextConfig {
    public String getServiceName() {
       return config.getOptionalValue(LoggingContextConstants.SERVICE_NAME, String.class)
          .filter(value -> !value.isBlank())
-         .orElse("unbekannter Service-Name");
+         .orElse("unknown-service");
    }
 
    /**
@@ -40,6 +40,6 @@ public class LoggingContextConfig {
    public String getEnvironment() {
       return config.getOptionalValue(LoggingContextConstants.PROFILE_ENV, String.class)
          .filter(value -> !value.isBlank())
-         .orElse("unbekannte Umgebung");
+         .orElse("prod");
    }
 }
