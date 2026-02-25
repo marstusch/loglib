@@ -59,6 +59,16 @@
          <version>1.57.0</version>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-opentelemetry</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-logging-json</artifactId>
+         <scope>provided</scope>
+      </dependency>
 
       <!-- Source: https://mvnrepository.com/artifact/org.assertj/assertj-core -->
       <dependency>
