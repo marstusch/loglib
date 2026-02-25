@@ -15,7 +15,7 @@ public class LoggerProducer {
 
    @Produces
    @Dependent // wichtig: pro InjectionPoint auch immer eine eigene Instanz liefern
-   Logger produce(InjectionPoint ip) {
+   public Logger produce(InjectionPoint ip) {
       return new LoggingWrapper(ip.getMember().getDeclaringClass());
    }
 }
