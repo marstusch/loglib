@@ -14,13 +14,29 @@
 
    <dependencies>
       <dependency>
-         <groupId>io.quarkus</groupId>
-         <artifactId>quarkus-arc-deployment</artifactId>
-      </dependency>
-      <dependency>
          <groupId>de.mtgz.logging</groupId>
          <artifactId>logging-extension</artifactId>
          <version>0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-arc-deployment</artifactId>
+      </dependency>
+      <!-- Quarkus core deployment (meist schon vorhanden via quarkus-bom) -->
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-arc-deployment</artifactId>
+      </dependency>
+
+      <!-- WICHTIG: Deployment-Artefakte für transitiv mitgebrachte Extensions -->
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-logging-json-deployment</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-opentelemetry-deployment</artifactId>
       </dependency>
    </dependencies>
 

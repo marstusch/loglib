@@ -40,10 +40,9 @@ class LoggingExtensionProcessor {
         return List.of(
                 // Console JSON
                 new RunTimeConfigurationDefaultBuildItem("quarkus.log.console.json", "true"),
-                new RunTimeConfigurationDefaultBuildItem("quarkus.log.console.json.enabled", "true"),
                 new RunTimeConfigurationDefaultBuildItem("quarkus.log.console.json.pretty-print", "true"),
 
-                // OTel defaults (funktioniert nur, wenn quarkus-opentelemetry auch als dependency da ist)
+                // OTel
                 new RunTimeConfigurationDefaultBuildItem("quarkus.otel.enabled", "true"),
                 new RunTimeConfigurationDefaultBuildItem("quarkus.otel.traces.enabled", "true"),
                 new RunTimeConfigurationDefaultBuildItem("quarkus.otel.metrics.enabled", "true")
