@@ -8,12 +8,22 @@
    <!-- ### POM relationships ################################################################# -->
 
    <groupId>de.mtgz.logging</groupId>
-   <artifactId>logging</artifactId>
+   <artifactId>logging-extension-parent</artifactId>
    <version>0.1-SNAPSHOT</version>
-   <packaging>jar</packaging>
+   <packaging>pom</packaging>
 
-   <name>Logging</name>
+   <name>Logging Extension - Parent</name>
+   <description>Quarkus Extension mit Utilityklassen und sonstiger Funktionalität zum Logging in Quarkus-Modulen</description>
 
+   <!-- === Maven Modules ===================================================================== -->
+   <modules>
+      <module>deployment</module>
+      <module>runtime</module>
+   </modules>
+
+   <!-- ### Build Settings #################################################################### -->
+
+   <!-- === Build Properties ================================================================== -->
    <properties>
       <maven.compiler.release>21</maven.compiler.release>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,110 +33,27 @@
       <quarkus.platform.version>3.12.0</quarkus.platform.version>
    </properties>
 
+   <!-- === Dependency Management ============================================================= -->
+
    <dependencyManagement>
-      <dependencies>
-         <dependency>
-            <groupId>${quarkus.platform.group-id}</groupId>
-            <artifactId>${quarkus.platform.artifact-id}</artifactId>
-            <version>${quarkus.platform.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-      </dependencies>
+        <dependencies>
+           <dependency>
+              <groupId>${quarkus.platform.group-id}</groupId>
+              <artifactId>${quarkus.platform.artifact-id}</artifactId>
+              <version>${quarkus.platform.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+           </dependency>
+        </dependencies>
    </dependencyManagement>
 
+   <!-- === Inherited Dependencies (Dependencies common to all modules) ======================= -->
+
    <dependencies>
-      <dependency>
-         <groupId>org.jboss.logging</groupId>
-         <artifactId>jboss-logging</artifactId>
-         <version>3.5.3.Final</version>
-      </dependency>
-      <dependency>
-         <groupId>org.eclipse.microprofile.config</groupId>
-         <artifactId>microprofile-config-api</artifactId>
-         <version>3.1</version>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>jakarta.ws.rs</groupId>
-         <artifactId>jakarta.ws.rs-api</artifactId>
-         <version>3.1.0</version>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>jakarta.validation</groupId>
-         <artifactId>jakarta.validation-api</artifactId>
-         <version>3.0.2</version>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>jakarta.annotation</groupId>
-         <artifactId>jakarta.annotation-api</artifactId>
-         <version>2.1.1</version>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>io.opentelemetry</groupId>
-         <artifactId>opentelemetry-api</artifactId>
-         <version>1.38.0</version>
-         <scope>provided</scope>
-      </dependency>
 
-      <dependency>
-         <groupId>commons-codec</groupId>
-         <artifactId>commons-codec</artifactId>
-         <version>1.20.0</version>
-      </dependency>
-
-      <dependency>
-         <groupId>io.quarkus</groupId>
-         <artifactId>quarkus-junit5</artifactId>
-         <version>3.12.0</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>io.quarkus</groupId>
-         <artifactId>quarkus-resteasy-reactive</artifactId>
-         <version>3.12.0</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>io.quarkus</groupId>
-         <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
-         <version>3.12.0</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>io.rest-assured</groupId>
-         <artifactId>rest-assured</artifactId>
-         <version>5.4.0</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.assertj</groupId>
-         <artifactId>assertj-core</artifactId>
-         <version>3.25.3</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.mockito</groupId>
-         <artifactId>mockito-core</artifactId>
-         <version>5.11.0</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>io.opentelemetry</groupId>
-         <artifactId>opentelemetry-sdk</artifactId>
-         <version>1.38.0</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.jboss.logmanager</groupId>
-         <artifactId>jboss-logmanager</artifactId>
-         <version>3.1.2.Final</version>
-         <scope>test</scope>
-      </dependency>
    </dependencies>
+
+   <!-- === Build ============================================================================= -->
 
    <build>
       <plugins>
@@ -145,4 +72,10 @@
          </plugin>
       </plugins>
    </build>
+
+   <!-- === Build Profiles ==================================================================== -->
+
+   <profiles>
+   </profiles>
+
 </project>
