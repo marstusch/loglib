@@ -36,7 +36,7 @@ class LoggingExtensionIntegrationTest {
       assertThat(generatedBody)
          .containsEntry(CorrelationIdConstants.MDC_KEY, generatedCorrelationId)
          .containsEntry(LoggingConstants.HTTP_METHOD_KEY, "GET")
-         .containsEntry(LoggingConstants.HTTP_PATH_KEY, "it/ok")
+         .containsEntry(LoggingConstants.HTTP_PATH_KEY, "/it/ok")
          .containsEntry(LoggingConstants.SERVICE_NAME_KEY, "loglib-it-service")
          .containsEntry(LoggingConstants.ENVIRONMENT_KEY, "itest");
 
