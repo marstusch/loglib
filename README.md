@@ -98,6 +98,14 @@ Damit diese Konfiguration ausgeführt wird, musst du lokal deine Applikation mit
 mvn clean install
 ```
 
+### Integrationstests der Extension ausführen
+
+```bash
+mvn -pl runtime test
+```
+
+Die `@QuarkusTest`-Suite unter `runtime/src/test/java/de/mtgz/logging/it` startet eine minimale Test-App mit `/it/*` Endpunkten und prüft CorrelationId-Propagation, ExceptionMapper und MDC-Cleanup End-to-End.
+
 ### Entwicklungshinweise
 
 - Alle Logging-Provider sind als JAX-RS-Provider registriert und wirken automatisch in Quarkus Services (siehe: `de.mtgz.logging.extension.deployment.LoggingExtensionProcessor`).
