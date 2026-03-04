@@ -1,13 +1,12 @@
 package de.mtgz.logging.wrapper;
 
-import org.jboss.logging.Logger;
-
 import static de.mtgz.logging.wrapper.LogLevel.DEBUG;
 import static de.mtgz.logging.wrapper.LogLevel.ERROR;
 import static de.mtgz.logging.wrapper.LogLevel.INFO;
 import static de.mtgz.logging.wrapper.LogLevel.TRACE;
 import static de.mtgz.logging.wrapper.LogLevel.WARN;
 
+import org.jboss.logging.Logger;
 
 /**
  * Wrappt den JBoss-Logger und stellt alle benötigten Methoden bereit

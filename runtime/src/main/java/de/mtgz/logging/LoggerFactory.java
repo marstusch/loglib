@@ -2,7 +2,7 @@ package de.mtgz.logging;
 
 import de.mtgz.logging.wrapper.LoggingWrapper;
 
-public class LoggerFactory {
+public final class LoggerFactory {
 
    private LoggerFactory() {
    }

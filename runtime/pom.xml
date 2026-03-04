@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>de.mtgz.logging</groupId>
+      <artifactId>logging-extension-parent</artifactId>
+      <version>0.1-SNAPSHOT</version>
+   </parent>
+
+   <artifactId>logging-extension</artifactId>
+   <name>Logging Extension - Runtime</name>
+
+   <dependencies>
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-arc</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-opentelemetry</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-logging-json</artifactId>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/org.jboss.logging/jboss-logging -->
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging</artifactId>
+         <version>3.6.1.Final</version>
+         <scope>compile</scope>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/jakarta.ws.rs/jakarta.ws.rs-api -->
+      <dependency>
+         <groupId>jakarta.ws.rs</groupId>
+         <artifactId>jakarta.ws.rs-api</artifactId>
+         <version>3.1.0</version>
+         <scope>compile</scope>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
+      <dependency>
+         <groupId>jakarta.annotation</groupId>
+         <artifactId>jakarta.annotation-api</artifactId>
+         <version>2.1.1</version>
+         <scope>compile</scope>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+      <dependency>
+         <groupId>jakarta.validation</groupId>
+         <artifactId>jakarta.validation-api</artifactId>
+         <version>3.1.1</version>
+         <scope>compile</scope>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/org.eclipse.microprofile.config/microprofile-config-api -->
+      <dependency>
+         <groupId>org.eclipse.microprofile.config</groupId>
+         <artifactId>microprofile-config-api</artifactId>
+         <version>3.1</version>
+         <scope>provided</scope>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/io.opentelemetry/opentelemetry-api -->
+      <dependency>
+         <groupId>io.opentelemetry</groupId>
+         <artifactId>opentelemetry-api</artifactId>
+         <version>1.57.0</version>
+         <scope>provided</scope>
+      </dependency>
+
+      <!-- Source: https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <version>3.27.7</version>
+         <scope>test</scope>
+      </dependency>
+      <!-- Source: https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+      <dependency>
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-core</artifactId>
+         <version>5.21.0</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <version>5.13.4</version>
+         <scope>test</scope>
+      </dependency>
+
+      <!-- wird benutzt für Laufzeitabhängigkeiten aller Tests im Package "exception" -->
+      <dependency>
+         <groupId>io.quarkus</groupId>
+         <artifactId>quarkus-rest</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>commons-codec</groupId>
+         <artifactId>commons-codec</artifactId>
+         <version>1.20.0</version>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-extension-maven-plugin</artifactId>
+            <version>3.20.2</version>
+            <executions>
+               <execution>
+                  <phase>compile</phase>
+                  <goals>
+                     <goal>extension-descriptor</goal>
+                  </goals>
+                  <configuration>
+                     <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>default-compile</id>
+                  <configuration>
+                     <annotationProcessorPaths>
+                        <path>
+                           <groupId>io.quarkus</groupId>
+                           <artifactId>quarkus-extension-processor</artifactId>
+                           <version>3.20.2</version>
+                        </path>
+                     </annotationProcessorPaths>
+                     <annotationProcessorPathsUseDepMgmt>true</annotationProcessorPathsUseDepMgmt>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>io.smallrye</groupId>
+            <artifactId>jandex-maven-plugin</artifactId>
+            <version>3.2.7</version>
+            <executions>
+               <execution>
+                  <id>make-index</id>
+                  <goals>
+                     <goal>jandex</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+</project>
