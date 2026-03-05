@@ -98,13 +98,19 @@ Damit diese Konfiguration ausgeführt wird, musst du lokal deine Applikation mit
 mvn clean install
 ```
 
-### Integrationstests der Extension ausführen
+### Consumer-Integrationstests der Extension ausführen
 
 ```bash
-mvn -pl runtime test
+mvn clean verify
 ```
 
-Die `@QuarkusTest`-Suite unter `runtime/src/test/java/de/mtgz/logging/it` startet eine minimale Test-App mit `/it/*` Endpunkten und prüft CorrelationId-Propagation, ExceptionMapper und MDC-Cleanup End-to-End.
+oder gezielt nur das Consumer-IT-Modul:
+
+```bash
+mvn -pl integration-tests -am verify
+```
+
+Die `@QuarkusTest`-Suite im Modul `integration-tests` startet eine kleine Consumer-ähnliche Quarkus-App mit `/it/*` Endpunkten und prüft CorrelationId-Propagation, Deployment-Registrierung, ExceptionMapper und MDC-Cleanup End-to-End.
 
 ### Entwicklungshinweise
 
