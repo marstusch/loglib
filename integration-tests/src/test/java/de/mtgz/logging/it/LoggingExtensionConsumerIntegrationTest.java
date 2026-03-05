@@ -16,7 +16,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 @QuarkusTest
-class LoggingExtensionIntegrationTest {
+class LoggingExtensionConsumerIntegrationTest {
 
    @Test
    void scenarioA_generatesAndReusesCorrelationIdAndSetsMdcFields() {
@@ -38,7 +38,7 @@ class LoggingExtensionIntegrationTest {
          .containsEntry(LoggingConstants.HTTP_METHOD_KEY, "GET")
          .containsEntry(LoggingConstants.HTTP_PATH_KEY, "/it/ok")
          .containsEntry(LoggingConstants.SERVICE_NAME_KEY, "loglib-it-service")
-         .containsEntry(LoggingConstants.ENVIRONMENT_KEY, "itest");
+         .containsEntry(LoggingConstants.ENVIRONMENT_KEY, "test");
 
       String incomingCorrelationId = "corr-fixed-123";
       Response reusedResponse = given()
