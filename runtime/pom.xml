@@ -127,7 +127,7 @@
          <plugin>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-extension-maven-plugin</artifactId>
-            <version>3.20.2</version>
+            <version>${quarkus.platform.version}</version>
             <executions>
                <execution>
                   <phase>compile</phase>
@@ -150,7 +150,7 @@
                         <path>
                            <groupId>io.quarkus</groupId>
                            <artifactId>quarkus-extension-processor</artifactId>
-                           <version>3.20.2</version>
+                           <version>${quarkus.platform.version}</version>
                         </path>
                      </annotationProcessorPaths>
                      <annotationProcessorPathsUseDepMgmt>true</annotationProcessorPathsUseDepMgmt>
