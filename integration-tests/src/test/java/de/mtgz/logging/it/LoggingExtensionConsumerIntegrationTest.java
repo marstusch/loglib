@@ -19,7 +19,7 @@ import io.restassured.response.Response;
 class LoggingExtensionConsumerIntegrationTest {
 
    @Test
-   void scenarioA_generatesAndReusesCorrelationIdAndSetsMdcFields() {
+   void soll_correlationid_generieren_und_wiederverwenden_und_mdc_felder_setzen() {
       Response generatedResponse = given()
          .when()
          .get("/it/ok")
@@ -57,7 +57,7 @@ class LoggingExtensionConsumerIntegrationTest {
    }
 
    @Test
-   void scenarioB_propagatesCorrelationIdToOutboundRestClientCall() {
+   void soll_correlationid_an_outbound_restclient_weitergeben() {
       Response response = given()
          .header(CorrelationIdConstants.HEADER_NAME, "corr-outbound-1")
          .when()
@@ -77,7 +77,7 @@ class LoggingExtensionConsumerIntegrationTest {
    }
 
    @Test
-   void scenarioC_mapsRuntimeAndValidationExceptions() {
+   void soll_runtime_und_validierungsfehler_auf_errorresponse_mappen() {
       Response runtimeResponse = given()
          .accept(ContentType.JSON)
          .when()
@@ -110,7 +110,7 @@ class LoggingExtensionConsumerIntegrationTest {
    }
 
    @Test
-   void scenarioD_doesNotLeakMdcBetweenRequests() {
+   void soll_mdc_zwischen_requests_nicht_leaken() {
       Response firstResponse = given()
          .when()
          .get("/it/ok")
@@ -143,7 +143,7 @@ class LoggingExtensionConsumerIntegrationTest {
    }
 
    @Test
-   void scenarioE_fanoutUsesSameCorrelationIdAndCreatesNewOneForNextRequest() {
+   void soll_beim_fanout_selbe_correlationid_nutzen_und_fuer_naechsten_request_neu_generieren() {
       Response firstFanoutResponse = given()
          .when()
          .get("/it/fanout")
