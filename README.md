@@ -30,7 +30,7 @@ Füge die Dependency im Zielprojekt (Quarkus Microservice) ein:
 
 ```xml
 <dependency>
-   <groupId>de.drvbund.pruefdienst.logging</groupId>
+   <groupId>de.mtgz.logging</groupId>
    <artifactId>logging-extension</artifactId>
    <version>0.1-SNAPSHOT</version>
 </dependency>
