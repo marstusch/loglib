@@ -2,6 +2,28 @@
 
 Logging ist eine in Java 21 geschriebene Quarkus Extension für andere Quarkus Microservices. Sie stellt wiederverwendbare Logging-Funktionen bereit, damit Entwickler diese nicht in jedem Service selbst implementieren müssen. Schwerpunkte sind CorrelationId-Propagation, standardisierte MDC-Felder sowie ein konsistentes Exception-Handling.
 
+## Inhaltsverzeichnis
+
+- [Verwendung als Maven-Dependency](#verwendung-als-maven-dependency)
+- [Verwendung des Loggers](#verwendung-des-loggers)
+- [Überschreiben der Standard-Logging-Konfiguration in Quarkus Projekten](#überschreiben-der-standard-logging-konfiguration-in-quarkus-projekten)
+  - [Logging mit unterschiedlichen Profilen](#logging-mit-unterschiedlichen-profilen)
+- [Setup & Entwicklung](#setup--entwicklung)
+  - [Voraussetzungen](#voraussetzungen)
+  - [Build & Tests](#build--tests)
+  - [Consumer-Integrationstests der Extension ausführen](#consumer-integrationstests-der-extension-ausführen)
+  - [Projektstruktur (Module)](#projektstruktur-module)
+  - [Package-Übersicht (runtime/deployment)](#package-übersicht-runtimedeployment)
+  - [Entwicklungshinweise](#entwicklungshinweise)
+- [Architektur](#architektur)
+  - [Architektur-Überblick](docs/architecture/overview.md)
+  - [Klassendiagramm (High-Level)](docs/architecture/class-diagram.md)
+  - [Sequenzdiagramm: Happy Path Request](docs/architecture/sequence-happy-path.md)
+  - [Sequenzdiagramm: Outbound Propagation](docs/architecture/sequence-outbound-propagation.md)
+  - [Sequenzdiagramm: Exception Handling](docs/architecture/sequence-exception-handling.md)
+  - [Komponentendiagramm / Moduldiagramm](docs/architecture/module-diagram.md)
+  - [MDC-Datenfluss](docs/architecture/mdc-dataflow.md)
+
 ## Verwendung als Maven-Dependency
 
 Füge die Dependency im Zielprojekt (Quarkus Microservice) ein:
@@ -57,6 +79,14 @@ quarkus.otel.metrics.enabled=true
 %dev.quarkus.log.console.format=%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p service=%X{service.name} env=%X{environment} host=%h traceId=%X{traceId} spanId=%X{spanId} corrId=%X{correlationId} http.method=%X{http.method} http.path=%X{http.path} message=%m %n
 
 # =========================================================
+# Logging Konfiguration TEST
+# =========================================================
+%test.quarkus.log.level=DEBUG
+%test.quarkus.log.console.level=DEBUG
+%test.quarkus.log.console.json.enabled=false
+%test.quarkus.log.console.format=%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p service=%X{service.name} env=%X{environment} host=%h traceId=%X{traceId} spanId=%X{spanId} corrId=%X{correlationId} http.method=%X{http.method} http.path=%X{http.path} message=%m %n
+
+# =========================================================
 # Logging Konfiguration PROD (und andere Umgebungen != DEV)
 # =========================================================
 %prod.quarkus.log.level=INFO
@@ -68,8 +98,9 @@ quarkus.otel.metrics.enabled=true
 Wenn ihr eine oder mehrere Properties ändern wollt, dann überschreibt den Eintrag in eurer eigenen `application.properties`.
 
 ### Logging mit unterschiedlichen Profilen
-In der Standard-Konfiguration finden sich zwei Profile:
+In der Standard-Konfiguration finden sich drei Profile:
 * DEV
+* TEST
 * PROD
 
 #### Profil DEV mit Human-Readable Logs
@@ -98,16 +129,79 @@ Damit diese Konfiguration ausgeführt wird, musst du lokal deine Applikation mit
 mvn clean install
 ```
 
-### Integrationstests der Extension ausführen
+### Consumer-Integrationstests der Extension ausführen
 
 ```bash
-mvn -pl runtime test
+mvn clean verify
 ```
 
-Die `@QuarkusTest`-Suite unter `runtime/src/test/java/de/mtgz/logging/it` startet eine minimale Test-App mit `/it/*` Endpunkten und prüft CorrelationId-Propagation, ExceptionMapper und MDC-Cleanup End-to-End.
+oder gezielt nur das Consumer-IT-Modul:
+
+```bash
+mvn -pl integration-tests -am verify
+```
+
+Die `@QuarkusTest`-Suite im Modul `integration-tests` startet eine kleine Consumer-ähnliche Quarkus-App mit `/it/*` Endpunkten und prüft CorrelationId-Propagation, Deployment-Registrierung, ExceptionMapper und MDC-Cleanup End-to-End.
+
+### Projektstruktur (Module)
+
+```text
+loglib/
+├─ deployment/
+│  └─ src/main/java/de/mtgz/logging/extension/deployment/
+│     └─ LoggingExtensionProcessor.java
+├─ runtime/
+│  ├─ src/main/java/de/mtgz/logging/
+│  │  ├─ Logger.java
+│  │  ├─ LoggerFactory.java
+│  │  ├─ LoggingRequestFilter.java
+│  │  ├─ LoggingResponseFilter.java
+│  │  ├─ correlation/
+│  │  ├─ context/
+│  │  ├─ exception/
+│  │  ├─ injection/
+│  │  ├─ config/
+│  │  ├─ trace/
+│  │  ├─ wrapper/
+│  │  ├─ security/
+│  │  └─ common/
+│  └─ src/main/resources/META-INF/
+│     ├─ quarkus-extension.yaml
+│     └─ services/
+└─ integration-tests/
+   ├─ src/main/java/de/mtgz/logging/it/
+   └─ src/test/java/de/mtgz/logging/it/
+```
+
+### Package-Übersicht (runtime/deployment)
+
+- `de.mtgz.logging` — Logger API, Factory und zentrale Request/Response-Filter für MDC-Befüllung/Cleanup.
+- `de.mtgz.logging.injection` — CDI-Producer für `@Inject Logger`.
+- `de.mtgz.logging.wrapper` — Adapter auf JBoss Logger (`LoggingWrapper`, `LogLevel`).
+- `de.mtgz.logging.context` — Auflösung von Service/Umgebung und Setzen/Löschen der MDC-Pflichtfelder.
+- `de.mtgz.logging.correlation` — CorrelationId Header/MDC Handling, Inbound/Outbound-Filter und Utilities.
+- `de.mtgz.logging.exception` — ExceptionMapper, `ErrorResponse` und `X-Error-Id`-Responseaufbau.
+- `de.mtgz.logging.trace` — Extraktion von TraceId/SpanId aus OpenTelemetry.
+- `de.mtgz.logging.config` — Default-ConfigSource für Logging-/OTel-Defaults je Profil.
+- `de.mtgz.logging.security` — Masking/Hashing Utilities für sichere Log-Ausgabe.
+- `de.mtgz.logging.common` — Konstante Keys/Header und UUID-Generierung.
+- `de.mtgz.logging.extension.deployment` — Quarkus Build Steps (Feature + AdditionalBean-Registrierung).
 
 ### Entwicklungshinweise
 
-- Alle Logging-Provider sind als JAX-RS-Provider registriert und wirken automatisch in Quarkus Services (siehe: `de.mtgz.logging.extension.deployment.LoggingExtensionProcessor`).
-- Die Library setzt MDC-Felder für CorrelationId, HTTP-Metadaten sowie Trace/Span-IDs.
-- Fehler werden über globale ExceptionMapper konsistent behandelt und liefern eine ErrorId im Response-Header.
+- Der `LoggingExtensionProcessor` registriert zentrale Runtime-Beans (z. B. `LoggerProducer`, Logging-Filter, CorrelationId-Outbound-Filter und ExceptionMapper) als unremovable Additional Beans.
+- `LoggingRequestFilter` setzt CorrelationId, HTTP-Metadaten, Service/Umgebung und Trace/Span in das MDC; `LoggingResponseFilter` schreibt CorrelationId in den Response und bereinigt das MDC.
+- `CorrelationIdClientRequestFilter` propagiert die CorrelationId in RestClient-Aufrufen.
+- ExceptionMapper liefern ein einheitliches `ErrorResponse`-Payload und den Header `X-Error-Id`.
+
+## Architektur
+
+Die detaillierten Diagramme liegen unter `docs/architecture/`:
+
+- [Architektur-Überblick](docs/architecture/overview.md)
+- [Klassendiagramm (High-Level)](docs/architecture/class-diagram.md)
+- [Sequenzdiagramm: Happy Path Request](docs/architecture/sequence-happy-path.md)
+- [Sequenzdiagramm: Outbound Propagation](docs/architecture/sequence-outbound-propagation.md)
+- [Sequenzdiagramm: Exception Handling](docs/architecture/sequence-exception-handling.md)
+- [Komponentendiagramm / Moduldiagramm](docs/architecture/module-diagram.md)
+- [MDC-Datenfluss](docs/architecture/mdc-dataflow.md)
