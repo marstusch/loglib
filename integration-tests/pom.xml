@@ -13,6 +13,11 @@
    <name>Logging Extension - Consumer Integration Tests</name>
    <packaging>jar</packaging>
 
+   <properties>
+      <maven.install.skip>true</maven.install.skip>
+      <maven.deploy.skip>true</maven.deploy.skip>
+   </properties>
+
    <dependencies>
       <dependency>
          <groupId>de.mtgz.logging</groupId>
@@ -45,6 +50,7 @@
       <dependency>
          <groupId>org.assertj</groupId>
          <artifactId>assertj-core</artifactId>
+         <version>3.27.7</version>
          <scope>test</scope>
       </dependency>
    </dependencies>
