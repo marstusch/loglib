@@ -3,39 +3,24 @@ package de.mtgz.logging.exception;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
-import jakarta.ws.rs.ext.Provider;
 
 import de.mtgz.logging.wrapper.LogLevel;
-import de.mtgz.logging.Logger;
-import de.mtgz.logging.LoggerFactory;
-import de.mtgz.logging.common.UuidGenerator;
 
 /**
- * ExceptionMapper für unerwartete Fehler (500).
+ * Wiederverwendbarer Mapper für unerwartete Fehler (500).
+ *
+ * Nicht als globaler Provider registrieren.
  */
-@Provider
 public class GenericExceptionMapper extends BaseExceptionMapper<Throwable> implements ExceptionMapper<Throwable> {
 
-   private static final Logger logger = LoggerFactory.getLogger(GenericExceptionMapper.class);
-
-   /**
-    * Erstellt einen Mapper mit Standard-Logger.
-    */
    public GenericExceptionMapper() {
-      super(logger);
+      super();
    }
 
-   GenericExceptionMapper(UuidGenerator idGenerator) {
-      super(logger, idGenerator);
+   GenericExceptionMapper(ErrorHandlingService errorHandlingService) {
+      super(errorHandlingService);
    }
 
-   /**
-    * Erstellt die Fehlerantwort für unerwartete Fehler.
-    *
-    * @param exception Exception
-    *
-    * @return Response mit Fehlerdetails
-    */
    @Override
    public Response toResponse(Throwable exception) {
       if (exception instanceof WebApplicationException webApplicationException
@@ -43,7 +28,7 @@ public class GenericExceptionMapper extends BaseExceptionMapper<Throwable> imple
          return webApplicationException.getResponse();
       }
 
-      return buildResponse(exception, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), LogLevel.ERROR,
+      return createErrorResponse(exception, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), LogLevel.ERROR,
          "Interner Server-Fehler");
    }
 }

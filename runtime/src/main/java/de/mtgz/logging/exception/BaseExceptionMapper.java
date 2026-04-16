@@ -1,68 +1,61 @@
 package de.mtgz.logging.exception;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.jboss.logging.MDC;
-
-import de.mtgz.logging.LoggerFactory;
-import de.mtgz.logging.wrapper.LogLevel;
-import de.mtgz.logging.Logger;
 import de.mtgz.logging.common.LoggingConstants;
-import de.mtgz.logging.common.UuidGenerator;
+import de.mtgz.logging.wrapper.LogLevel;
 
 /**
- * Basisklasse für das Exception Mapping mit standardisierter Fehlerbehandlung.
+ * Basisklasse für ExceptionMapper mit standardisierter ErrorId- und Logging-Behandlung.
  *
  * @param <T> Exception-Typ
  */
-abstract class BaseExceptionMapper<T extends Throwable> {
+public abstract class BaseExceptionMapper<T extends Throwable> {
 
-   private Logger logger = LoggerFactory.getLogger(BaseExceptionMapper.class);
-   private final UuidGenerator idGenerator;
+   @Inject
+   ErrorHandlingService errorHandlingService;
 
-   @Context
-   UriInfo uriInfo;
    @Context
    Request request;
 
-   BaseExceptionMapper(Logger logger) {
-      this(logger, new UuidGenerator());
+   @Context
+   UriInfo uriInfo;
+
+   protected BaseExceptionMapper() {
    }
 
-   BaseExceptionMapper(Logger logger, UuidGenerator idGenerator) {
-      this.logger = logger;
-      this.idGenerator = idGenerator;
+   protected BaseExceptionMapper(ErrorHandlingService errorHandlingService) {
+      this.errorHandlingService = errorHandlingService;
    }
 
-   Response buildResponse(T exception, int status, LogLevel level, String fallbackMessage) {
-      checkHttpMethodAndPath();
+   protected Response createErrorResponse(T exception, int status, String fallbackMessage) {
+      return createErrorResponse(exception, status, LogLevel.ERROR, fallbackMessage);
+   }
 
-      String message = (exception.getMessage() == null || exception.getMessage().isBlank())
-         ? fallbackMessage
-         : exception.getMessage();
+   protected Response createErrorResponse(T exception, int status, LogLevel level, String fallbackMessage) {
+      ErrorContext errorContext = errorHandlingService.createErrorContext(
+         exception,
+         status,
+         fallbackMessage,
+         level,
+         request,
+         uriInfo);
 
-      String errorId = idGenerator.generate();
-      MDC.put(LoggingConstants.ERROR_ID_KEY, errorId);
-      logger.logf(level, exception, "status=%d errorId=%s ursache=%s", status, errorId, message);
-
-      // nach dem Loggen muss der MDC von der ErrorId gesäubert werden, damit diese im selben Kontext immer weiter gereicht wird
-      MDC.remove(LoggingConstants.ERROR_ID_KEY);
-
-      return Response.status(status)
-         .header(LoggingConstants.ERROR_ID_HEADER, errorId)
-         .entity(new ErrorResponse(errorId, status, message))
+      return Response.status(errorContext.status())
+         .header(LoggingConstants.ERROR_ID_HEADER, errorContext.errorId())
+         .entity(new ErrorResponse(errorContext.errorId(), errorContext.status(), errorContext.message()))
          .build();
    }
 
-   private void checkHttpMethodAndPath() {
-      if (MDC.get(LoggingConstants.HTTP_METHOD_KEY) == null && request != null) {
-         MDC.put(LoggingConstants.HTTP_METHOD_KEY, request.getMethod());
-      }
-      if (MDC.get(LoggingConstants.HTTP_PATH_KEY) == null && uriInfo != null) {
-         MDC.put(LoggingConstants.HTTP_PATH_KEY, uriInfo.getPath());
-      }
+   protected Response erstelleFehlerantwort(T exception, int status, String fallbackMessage) {
+      return createErrorResponse(exception, status, fallbackMessage);
+   }
+
+   protected Response erstelleFehlerantwort(T exception, int status, LogLevel level, String fallbackMessage) {
+      return createErrorResponse(exception, status, level, fallbackMessage);
    }
 }

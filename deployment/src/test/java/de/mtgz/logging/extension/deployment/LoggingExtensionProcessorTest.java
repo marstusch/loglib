@@ -30,8 +30,6 @@ class LoggingExtensionProcessorTest {
             "de.mtgz.logging.injection.LoggerProducer",
             "de.mtgz.logging.LoggingRequestFilter",
             "de.mtgz.logging.LoggingResponseFilter",
-            "de.mtgz.logging.correlation.CorrelationIdClientRequestFilter",
-            "de.mtgz.logging.exception.GenericExceptionMapper",
-            "de.mtgz.logging.exception.ValidationExceptionMapper");
+            "de.mtgz.logging.correlation.CorrelationIdClientRequestFilter");
    }
 }
