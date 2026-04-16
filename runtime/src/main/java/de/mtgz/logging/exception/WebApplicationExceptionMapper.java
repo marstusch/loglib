@@ -3,13 +3,18 @@ package de.mtgz.logging.exception;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
-import jakarta.ws.rs.ext.Provider;
 
 import de.mtgz.logging.Logger;
 import de.mtgz.logging.LoggerFactory;
 import de.mtgz.logging.wrapper.LogLevel;
 
-@Provider
+/**
+ * Optionaler Mapper für bewusst geworfene {@link WebApplicationException}.
+ *
+ * Nicht als globaler Provider registrieren, da sonst Framework-/Routing-Fehler
+ * (z. B. 404 bei Nicht-Match) unbeabsichtigt als fachliche ErrorResponse
+ * überschrieben werden können.
+ */
 public class WebApplicationExceptionMapper extends BaseExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
    private static final Logger logger = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
@@ -26,6 +31,6 @@ public class WebApplicationExceptionMapper extends BaseExceptionMapper implement
 
       String fallbackMessage = status == Response.Status.NOT_FOUND.getStatusCode() ? "Resource nicht gefunden" : "Request fehlgeschlagen";
 
-      return buildResponse(exception, Response.Status.NOT_FOUND.getStatusCode(), LogLevel.ERROR, fallbackMessage);
+      return buildResponse(exception, status, LogLevel.ERROR, fallbackMessage);
    }
 }

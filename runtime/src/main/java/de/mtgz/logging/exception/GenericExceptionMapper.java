@@ -1,5 +1,6 @@
 package de.mtgz.logging.exception;
 
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -37,6 +38,11 @@ public class GenericExceptionMapper extends BaseExceptionMapper<Throwable> imple
     */
    @Override
    public Response toResponse(Throwable exception) {
+      if (exception instanceof WebApplicationException webApplicationException
+         && webApplicationException.getResponse() != null) {
+         return webApplicationException.getResponse();
+      }
+
       return buildResponse(exception, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), LogLevel.ERROR,
          "Interner Server-Fehler");
    }

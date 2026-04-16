@@ -110,6 +110,48 @@ class LoggingExtensionConsumerIntegrationTest {
    }
 
    @Test
+   void soll_bewusst_geworfene_http_fehler_unveraendert_lassen() {
+      Response response = given()
+         .accept(ContentType.JSON)
+         .when()
+         .get("/it/http/forbidden")
+         .then()
+         .statusCode(403)
+         .extract()
+         .response();
+
+      assertThat(response.getHeader(LoggingConstants.ERROR_ID_HEADER)).isNull();
+   }
+
+   @Test
+   void soll_framework_404_fuer_unbekannten_pfad_nicht_als_errorresponse_umdeuten() {
+      Response response = given()
+         .accept(ContentType.JSON)
+         .when()
+         .get("/")
+         .then()
+         .statusCode(404)
+         .extract()
+         .response();
+
+      assertThat(response.getHeader(LoggingConstants.ERROR_ID_HEADER)).isNull();
+   }
+
+   @Test
+   void soll_downstream_http_fehlerstatus_fuer_aufrufenden_client_unveraendert_lassen() {
+      Response response = given()
+         .accept(ContentType.JSON)
+         .when()
+         .get("/it/call-missing")
+         .then()
+         .statusCode(404)
+         .extract()
+         .response();
+
+      assertThat(response.getHeader(LoggingConstants.ERROR_ID_HEADER)).isNull();
+   }
+
+   @Test
    void soll_mdc_zwischen_requests_nicht_leaken() {
       Response firstResponse = given()
          .when()

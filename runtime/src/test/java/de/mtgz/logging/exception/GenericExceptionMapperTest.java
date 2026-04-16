@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
@@ -43,5 +44,17 @@ class GenericExceptionMapperTest {
       assertThat(MDC.get(LoggingConstants.ERROR_ID_KEY)).isNull();
       assertThat(MDC.get(LoggingConstants.HTTP_METHOD_KEY)).isEqualTo("POST");
       assertThat(MDC.get(LoggingConstants.HTTP_PATH_KEY)).isEqualTo("/fail");
+   }
+
+   @Test
+   void soll_webapplicationexception_response_unveraendert_durchreichen() {
+      GenericExceptionMapper mapper = new GenericExceptionMapper(new UuidGeneratorMock("error-ignored"));
+      Response originalResponse = Response.status(403).header("X-Test", "value").entity("forbidden").build();
+
+      Response response = mapper.toResponse(new WebApplicationException("forbidden", originalResponse));
+
+      assertThat(response).isSameAs(originalResponse);
+      assertThat(response.getStatus()).isEqualTo(403);
+      assertThat(response.getHeaderString(LoggingConstants.ERROR_ID_HEADER)).isNull();
    }
 }

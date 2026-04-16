@@ -23,11 +23,11 @@ class WebApplicationExceptionMapperTest {
 
       Response response = mapper.toResponse(new WebApplicationException("kaputt", Response.status(500).build()));
 
-      assertThat(response.getStatus()).isEqualTo(404);
+      assertThat(response.getStatus()).isEqualTo(500);
       assertThat(response.getHeaderString(LoggingConstants.ERROR_ID_HEADER)).isNotBlank();
       ErrorResponse entity = (ErrorResponse) response.getEntity();
       assertThat(entity.message()).isEqualTo("kaputt");
-      assertThat(entity.status()).isEqualTo(404);
+      assertThat(entity.status()).isEqualTo(500);
    }
 
    @Test
@@ -49,6 +49,6 @@ class WebApplicationExceptionMapperTest {
 
       ErrorResponse entity = (ErrorResponse) response.getEntity();
       assertThat(entity.message()).isEqualTo("Request fehlgeschlagen");
-      assertThat(entity.status()).isEqualTo(404);
+      assertThat(entity.status()).isEqualTo(500);
    }
 }
