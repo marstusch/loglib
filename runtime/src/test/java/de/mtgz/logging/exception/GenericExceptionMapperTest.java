@@ -13,6 +13,7 @@ import org.jboss.logging.MDC;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import de.mtgz.logging.Logger;
 import de.mtgz.logging.common.LoggingConstants;
 import de.mtgz.logging.common.UuidGeneratorMock;
 
@@ -25,7 +26,9 @@ class GenericExceptionMapperTest {
 
    @Test
    void soll_id_status_message_bei_random_exception_liefern() {
-      GenericExceptionMapper mapper = new GenericExceptionMapper(new UuidGeneratorMock("error-123"));
+      Logger logger = mock(Logger.class);
+      ErrorHandlingService errorHandlingService = new ErrorHandlingService(logger, new UuidGeneratorMock("error-123"));
+      GenericExceptionMapper mapper = new GenericExceptionMapper(errorHandlingService);
       Request request = mock(Request.class);
       UriInfo uriInfo = mock(UriInfo.class);
       when(request.getMethod()).thenReturn("POST");
@@ -48,7 +51,9 @@ class GenericExceptionMapperTest {
 
    @Test
    void soll_webapplicationexception_response_unveraendert_durchreichen() {
-      GenericExceptionMapper mapper = new GenericExceptionMapper(new UuidGeneratorMock("error-ignored"));
+      Logger logger = mock(Logger.class);
+      GenericExceptionMapper mapper = new GenericExceptionMapper(
+         new ErrorHandlingService(logger, new UuidGeneratorMock("error-ignored")));
       Response originalResponse = Response.status(403).header("X-Test", "value").entity("forbidden").build();
 
       Response response = mapper.toResponse(new WebApplicationException("forbidden", originalResponse));

@@ -1,6 +1,7 @@
 package de.mtgz.logging.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
@@ -9,6 +10,7 @@ import org.jboss.logging.MDC;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import de.mtgz.logging.Logger;
 import de.mtgz.logging.common.LoggingConstants;
 import de.mtgz.logging.common.UuidGeneratorMock;
 
@@ -21,7 +23,9 @@ class NotFoundExceptionMapperTest {
 
    @Test
    void returnsNotFoundResponse() {
-      NotFoundExceptionMapper mapper = new NotFoundExceptionMapper(new UuidGeneratorMock("error-404"));
+      Logger logger = mock(Logger.class);
+      NotFoundExceptionMapper mapper = new NotFoundExceptionMapper(
+         new ErrorHandlingService(logger, new UuidGeneratorMock("error-404")));
 
       Response response = mapper.toResponse(new NotFoundException("nicht gefunden"));
 

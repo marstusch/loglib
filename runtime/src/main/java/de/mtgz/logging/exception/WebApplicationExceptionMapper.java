@@ -4,10 +4,6 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 
-import de.mtgz.logging.Logger;
-import de.mtgz.logging.LoggerFactory;
-import de.mtgz.logging.wrapper.LogLevel;
-
 /**
  * Optionaler Mapper für bewusst geworfene {@link WebApplicationException}.
  *
@@ -15,12 +11,15 @@ import de.mtgz.logging.wrapper.LogLevel;
  * (z. B. 404 bei Nicht-Match) unbeabsichtigt als fachliche ErrorResponse
  * überschrieben werden können.
  */
-public class WebApplicationExceptionMapper extends BaseExceptionMapper implements ExceptionMapper<WebApplicationException> {
-
-   private static final Logger logger = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
+public class WebApplicationExceptionMapper extends BaseExceptionMapper<WebApplicationException>
+   implements ExceptionMapper<WebApplicationException> {
 
    public WebApplicationExceptionMapper() {
-      super(logger);
+      super();
+   }
+
+   WebApplicationExceptionMapper(ErrorHandlingService errorHandlingService) {
+      super(errorHandlingService);
    }
 
    @Override
@@ -29,8 +28,10 @@ public class WebApplicationExceptionMapper extends BaseExceptionMapper implement
          ? exception.getResponse().getStatus()
          : Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
 
-      String fallbackMessage = status == Response.Status.NOT_FOUND.getStatusCode() ? "Resource nicht gefunden" : "Request fehlgeschlagen";
+      String fallbackMessage = status == Response.Status.NOT_FOUND.getStatusCode()
+         ? "Resource nicht gefunden"
+         : "Request fehlgeschlagen";
 
-      return buildResponse(exception, status, LogLevel.ERROR, fallbackMessage);
+      return createErrorResponse(exception, status, fallbackMessage);
    }
 }

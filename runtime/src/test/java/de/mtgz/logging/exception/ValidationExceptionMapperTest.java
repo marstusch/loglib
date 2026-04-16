@@ -1,6 +1,7 @@
 package de.mtgz.logging.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 
@@ -11,6 +12,7 @@ import org.jboss.logging.MDC;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import de.mtgz.logging.Logger;
 import de.mtgz.logging.common.LoggingConstants;
 import de.mtgz.logging.common.UuidGeneratorMock;
 
@@ -23,7 +25,9 @@ class ValidationExceptionMapperTest {
 
    @Test
    void soll_id_status_message_bei_validierungsfehler_liefern() {
-      ValidationExceptionMapper mapper = new ValidationExceptionMapper(new UuidGeneratorMock("error-400"));
+      Logger logger = mock(Logger.class);
+      ValidationExceptionMapper mapper = new ValidationExceptionMapper(
+         new ErrorHandlingService(logger, new UuidGeneratorMock("error-400")));
 
       Response response = mapper.toResponse(new ConstraintViolationException("ungültig", Collections.emptySet()));
 
