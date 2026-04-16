@@ -25,4 +25,9 @@ public interface DownstreamClient {
    @Path("/b")
    @Produces(MediaType.TEXT_PLAIN)
    String downstreamB();
+
+   @GET
+   @Path("/missing")
+   @Produces(MediaType.TEXT_PLAIN)
+   String missing();
 }

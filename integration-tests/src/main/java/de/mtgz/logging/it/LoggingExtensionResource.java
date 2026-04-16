@@ -11,6 +11,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -66,6 +67,18 @@ public class LoggingExtensionResource {
    @Path("/validation")
    public String validation() {
       throw new ConstraintViolationException("validation failed", Set.<ConstraintViolation<?>>of());
+   }
+
+   @GET
+   @Path("/http/forbidden")
+   public String forbidden() {
+      throw new WebApplicationException("forbidden", 403);
+   }
+
+   @GET
+   @Path("/call-missing")
+   public String callMissing() {
+      return downstreamClient.missing();
    }
 
    @GET

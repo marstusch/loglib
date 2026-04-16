@@ -32,7 +32,6 @@ class LoggingExtensionProcessorTest {
             "de.mtgz.logging.LoggingResponseFilter",
             "de.mtgz.logging.correlation.CorrelationIdClientRequestFilter",
             "de.mtgz.logging.exception.GenericExceptionMapper",
-            "de.mtgz.logging.exception.ValidationExceptionMapper",
-            "de.mtgz.logging.exception.WebApplicationExceptionMapper");
+            "de.mtgz.logging.exception.ValidationExceptionMapper");
    }
 }
