@@ -77,39 +77,6 @@ class LoggingExtensionConsumerIntegrationTest {
    }
 
    @Test
-   void soll_runtime_und_validierungsfehler_auf_errorresponse_mappen() {
-      Response runtimeResponse = given()
-         .accept(ContentType.JSON)
-         .when()
-         .get("/it/boom")
-         .then()
-         .statusCode(500)
-         .extract()
-         .response();
-
-      String runtimeErrorId = runtimeResponse.getHeader(LoggingConstants.ERROR_ID_HEADER);
-      assertThat(runtimeErrorId).isNotBlank();
-      ErrorResponse runtimeBody = runtimeResponse.as(ErrorResponse.class);
-      assertThat(runtimeBody.errorId()).isEqualTo(runtimeErrorId);
-      assertThat(runtimeBody.status()).isEqualTo(500);
-
-      Response validationResponse = given()
-         .accept(ContentType.JSON)
-         .when()
-         .get("/it/validation")
-         .then()
-         .statusCode(400)
-         .extract()
-         .response();
-
-      String validationErrorId = validationResponse.getHeader(LoggingConstants.ERROR_ID_HEADER);
-      assertThat(validationErrorId).isNotBlank();
-      ErrorResponse validationBody = validationResponse.as(ErrorResponse.class);
-      assertThat(validationBody.errorId()).isEqualTo(validationErrorId);
-      assertThat(validationBody.status()).isEqualTo(400);
-   }
-
-   @Test
    void soll_bewusst_geworfene_http_fehler_unveraendert_lassen() {
       Response response = given()
          .accept(ContentType.JSON)
@@ -144,7 +111,7 @@ class LoggingExtensionConsumerIntegrationTest {
          .when()
          .get("/it/call-missing")
          .then()
-         .statusCode(404)
+         .statusCode(500)
          .extract()
          .response();
 

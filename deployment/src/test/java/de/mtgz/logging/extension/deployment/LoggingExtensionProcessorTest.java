@@ -15,7 +15,7 @@ class LoggingExtensionProcessorTest {
 
       FeatureBuildItem featureBuildItem = processor.feature();
 
-      assertThat(featureBuildItem.getInfo().getName()).isEqualTo("logging-extension");
+      assertThat(featureBuildItem.getName()).isEqualTo("logging-extension");
    }
 
    @Test
