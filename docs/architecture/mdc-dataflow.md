@@ -24,7 +24,7 @@ endif
 :Business-Logik + Logger;
 :Outbound RestClient setzt\nX-Correlation-Id;
 
-if (Exception?) then (ja)
+if (Exception + Consumer-Mapper aktiv?) then (ja)
   :errorId generieren;
   :MDC.put(errorId);
   :Response Header X-Error-Id setzen;
