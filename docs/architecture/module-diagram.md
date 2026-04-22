@@ -14,7 +14,8 @@ package "loglib" {
 
 component "LoggingExtensionProcessor\n(BuildStep)" as Processor
 component "Quarkus Build" as Build
-component "Runtime Beans\n(LoggerProducer, Filter, Mapper)" as Beans
+component "Runtime Beans\n(LoggerProducer, Filter, CorrelationIdClientRequestFilter)" as Beans
+component "Exception-Handling Bausteine\n(BaseExceptionMapper, ErrorHandlingService, ErrorContext, ErrorResponse)" as ErrorBuildingBlocks
 component "ConfigSourceProvider\n(LoggingDefaultsConfigSourceProvider)" as Config
 
 Deployment --> Runtime : dependency
@@ -23,8 +24,9 @@ Build --> Processor : executes build steps
 Processor --> Beans : AdditionalBeanBuildItem
 Processor --> Build : FeatureBuildItem("logging-extension")
 Runtime --> Config : service loader registration
+Runtime --> ErrorBuildingBlocks : bereitgestellt für Consumer
 
 @enduml
 ```
 
-Hinweis: Die Defaults stammen aus einem `ConfigSourceProvider` im Runtime-Modul und können im Consumer über `application.properties` überschrieben werden.
+Hinweis: Die Defaults stammen aus einem `ConfigSourceProvider` im Runtime-Modul und können im Consumer über `application.properties` überschrieben werden. Konkrete ExceptionMapper werden nicht global durch das Deployment-Modul registriert, sondern vom Consumer bereitgestellt.

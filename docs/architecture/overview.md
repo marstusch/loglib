@@ -1,6 +1,6 @@
 # Architektur-Überblick
 
-Diese Seite fasst die zentralen Laufzeit-Flows der Extension zusammen: Logger-Injection, Inbound/Outbound-CorrelationId, MDC-Befüllung und Exception-Handling.
+Diese Seite fasst die zentralen Laufzeit-Flows der Extension zusammen: Logger-Injection, Inbound/Outbound-CorrelationId, MDC-Befüllung und die Bausteine für Consumer-seitiges Exception-Handling.
 
 ```plantuml
 @startuml
@@ -14,7 +14,9 @@ component "Resource + @Inject Logger" as Res
 component "LoggerProducer" as Prod
 component "LoggingWrapper\n(JBoss Logger)" as Wrapper
 component "CorrelationIdClientRequestFilter" as Out
-component "ExceptionMapper" as Ex
+component "Consumer ExceptionMapper\n(optional)" as Ex
+component "BaseExceptionMapper" as BaseEx
+component "ErrorHandlingService" as ErrSvc
 component "LoggingResponseFilter" as Resp
 
 Client --> Jaxrs : HTTP Request
@@ -27,10 +29,12 @@ Res --> Wrapper : info()/error()/...
 Res --> Out : RestClient call (optional)
 Out --> Client : X-Correlation-Id weitergeben
 Res --> Ex : throw Exception (optional)
+Ex --> BaseEx : extends + createErrorResponse(...)
+BaseEx --> ErrSvc : createErrorContext(...)
 Jaxrs --> Resp : filter(response)
 Resp --> Ctx : bereinigeMDC()
 Resp --> Client : HTTP Response + X-Correlation-Id
 @enduml
 ```
 
-Legende: CorrelationId wird für Inbound/Outbound über `X-Correlation-Id` geführt, Fehler über `X-Error-Id`, und strukturierte Felder werden im MDC gehalten.
+Legende: CorrelationId wird für Inbound/Outbound über `X-Correlation-Id` geführt, Fehler über `X-Error-Id`, und strukturierte Felder werden im MDC gehalten. Die Extension liefert dafür Bausteine (`BaseExceptionMapper`, `ErrorHandlingService`, `ErrorContext`, `ErrorResponse`), registriert aber keine globalen konkreten ExceptionMapper.

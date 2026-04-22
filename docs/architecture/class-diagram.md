@@ -18,11 +18,10 @@ class CorrelationIdResponseFilter
 class CorrelationIdClientRequestFilter
 class CorrelationIdUtil
 class BaseExceptionMapper
-class GenericExceptionMapper
-class ValidationExceptionMapper
-class WebApplicationExceptionMapper
-class NotFoundExceptionMapper
+class ErrorHandlingService
+class ErrorContext
 class ErrorResponse
+class ConsumerExceptionMapper
 class LoggingDefaultsConfigSourceProvider
 class LoggingExtensionProcessor
 
@@ -37,22 +36,18 @@ CorrelationIdRequestFilter ..> CorrelationIdUtil
 CorrelationIdResponseFilter ..> CorrelationIdUtil
 CorrelationIdClientRequestFilter ..> CorrelationIdUtil
 
+BaseExceptionMapper --> ErrorHandlingService : uses
 BaseExceptionMapper --> ErrorResponse : builds
-GenericExceptionMapper --|> BaseExceptionMapper
-ValidationExceptionMapper --|> BaseExceptionMapper
-WebApplicationExceptionMapper --|> BaseExceptionMapper
-NotFoundExceptionMapper --|> BaseExceptionMapper
+ErrorHandlingService --> ErrorContext : creates
+ConsumerExceptionMapper --|> BaseExceptionMapper
 
 LoggingExtensionProcessor ..> LoggerProducer : AdditionalBean
 LoggingExtensionProcessor ..> LoggingRequestFilter : AdditionalBean
 LoggingExtensionProcessor ..> LoggingResponseFilter : AdditionalBean
 LoggingExtensionProcessor ..> CorrelationIdClientRequestFilter : AdditionalBean
-LoggingExtensionProcessor ..> GenericExceptionMapper : AdditionalBean
-LoggingExtensionProcessor ..> ValidationExceptionMapper : AdditionalBean
-LoggingExtensionProcessor ..> WebApplicationExceptionMapper : AdditionalBean
 
 LoggingDefaultsConfigSourceProvider ..> "MicroProfile ConfigSource"
 @enduml
 ```
 
-Hinweis: Es werden bewusst nur Kernbeziehungen gezeigt; Utility-/Security-Klassen sind ausgelassen.
+Hinweis: Es werden bewusst nur Kernbeziehungen gezeigt; Utility-/Security-Klassen sind ausgelassen. Konkrete `ConsumerExceptionMapper` sind Platzhalter für Mapper im jeweiligen Consumer-Service und werden nicht durch die Extension automatisch aktiviert.
